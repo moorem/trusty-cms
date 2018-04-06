@@ -84,7 +84,7 @@ class Asset < ActiveRecord::Base
   end
 
   def has_style?(style_name='original')
-    style_name == 'original' || paperclip_styles.keys.include?(style_name.to_sym)
+    style_name == 'original' #|| paperclip_styles.keys.include?(style_name.to_sym)
   end
 
   def basename

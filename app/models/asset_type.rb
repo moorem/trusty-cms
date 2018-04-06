@@ -125,7 +125,7 @@ class AssetType
     end
     styles
   end
-  
+
   def standard_styles
     {
       :thumbnail => { :geometry => '100x100#', :format => :png }
@@ -177,8 +177,8 @@ class AssetType
   # class methods
 
   def self.for(attachment)
-    extension = File.extname(attachment.original_filename).sub(/^\.+/, "")
-    from_extension(extension) || from_mimetype(attachment.instance_read(:content_type)) || catchall
+    extension = File.extname(attachment.record.asset_file_name).sub(/^\.+/, "")
+    from_extension(extension) || from_mimetype(attachment.record.asset_content_type) || catchall
   end
 
   def self.from_extension(extension)
