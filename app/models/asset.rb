@@ -1,5 +1,5 @@
 class Asset < ActiveRecord::Base
-  include Paperclip::Glue
+  # include Paperclip::Glue
 
   has_many :page_attachments, :dependent => :destroy
   has_many :pages, :through => :page_attachments
@@ -35,46 +35,47 @@ class Asset < ActiveRecord::Base
     end
   }
 
-  has_attached_file :asset,
-                    :styles => lambda { |attachment|
-                      AssetType.for(attachment).paperclip_styles
-                    },
-                    :processors => lambda { |asset|
-                      asset.paperclip_processors
-                    },
-                    :whiny => false,
-                    :storage => TrustyCms.config["paperclip.storage"],
-                    :path => TrustyCms.config["paperclip.path"],
-                    :url => TrustyCms.config["paperclip.url"],
-                    :fog_credentials =>
-                        TrustyCmsClippedExtension::Cloud.credentials,
-                    :fog_directory => TrustyCms.config["paperclip.fog.directory"],
-                    :fog_public => TrustyCms.config["paperclip.fog.public?"] || true,
-                    :fog_host => TrustyCmsClippedExtension::Cloud.host,
-                    :fog_file => {
-                        'Cache-Control' => 'max-age=2419200'
-                        #'Expires'       => 1.month.from_now.httpdate
-                    }
+  # has_attached_file :asset,
+  #                   :styles => lambda { |attachment|
+  #                     AssetType.for(attachment).paperclip_styles
+  #                   },
+  #                   :processors => lambda { |asset|
+  #                     asset.paperclip_processors
+  #                   },
+  #                   :whiny => false,
+  #                   :storage => TrustyCms.config["paperclip.storage"],
+  #                   :path => TrustyCms.config["paperclip.path"],
+  #                   :url => TrustyCms.config["paperclip.url"],
+  #                   :fog_credentials =>
+  #                       TrustyCmsClippedExtension::Cloud.credentials,
+  #                   :fog_directory => TrustyCms.config["paperclip.fog.directory"],
+  #                   :fog_public => TrustyCms.config["paperclip.fog.public?"] || true,
+  #                   :fog_host => TrustyCmsClippedExtension::Cloud.host,
+  #                   :fog_file => {
+  #                       'Cache-Control' => 'max-age=2419200'
+  #                       #'Expires'       => 1.month.from_now.httpdate
+  #                   }
+  has_one_attached :asset
 
-  validates_attachment_content_type :asset, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif", "application/pdf", "application/javascript", "text/javascript", "text/css"]
+  validates_acceptance_of :asset, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif", "application/pdf", "application/javascript", "text/javascript", "text/css"]
 
   before_save :assign_title
   before_save :assign_uuid
 
-  after_post_process :read_dimensions
+  #after_post_process :read_dimensions
 
-  validates_attachment_presence :asset, :message => "You must choose a file to upload!"
+  validates_absence_of :asset, :message => "You must choose a file to upload!"
   if TrustyCms.config["paperclip.skip_filetype_validation"] != "true" && TrustyCms.config['paperclip.content_types']
     validates_attachment_content_type :asset, :content_type => TrustyCms.config["paperclip.content_types"].gsub(' ','').split(',')
   else
-    validates_attachment_presence :asset, :message => "Your uploaded file must have an extension in its name!"
+    validates_absence_of :asset, :message => "Your uploaded file must have an extension in its name!"
   end
-  validates_attachment_size :asset, :less_than => ( TrustyCms.config["assets.max_asset_size"] || 5 ).to_i.megabytes
+  # validates_attachment_size :asset, :less_than => ( TrustyCms.config["assets.max_asset_size"] || 5 ).to_i.megabytes
 
   def asset_type
     AssetType.for(asset)
   end
-  delegate :paperclip_processors, :paperclip_styles, :style_dimensions, :style_format, :to => :asset_type
+  # delegate :paperclip_processors, :paperclip_styles, :style_dimensions, :style_format, :to => :asset_type
 
   def thumbnail(style_name='original')
     return asset.url if style_name.to_sym == :original

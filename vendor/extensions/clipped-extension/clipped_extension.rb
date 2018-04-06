@@ -1,5 +1,5 @@
 class ClippedExtension < TrustyCms::Extension
-  migrate_from 'Paperclipped', 20100327111216
+  # migrate_from 'Paperclipped', 20100327111216
   require 'admin/assets_helper'
 
   def activate
@@ -24,9 +24,9 @@ class ClippedExtension < TrustyCms::Extension
       admin.configuration.show.add :trusty_config, 'admin/configuration/clipped_show', :after => 'defaults'
       admin.configuration.edit.add :form,   'admin/configuration/clipped_edit', :after => 'edit_defaults'
 
-      if TrustyCms::Config.table_exists? && TrustyCms::config["paperclip.command_path"]    # This is needed for testing if you are using mod_rails
-        Paperclip.options[:command_path] = TrustyCms::config["paperclip.command_path"]
-      end
+      # if TrustyCms::Config.table_exists? && TrustyCms::config["paperclip.command_path"]    # This is needed for testing if you are using mod_rails
+      #   Paperclip.options[:command_path] = TrustyCms::config["paperclip.command_path"]
+      # end
 
       tab "Assets", :after => "Content" do
         add_item "All", "/admin/assets/"
